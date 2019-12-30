@@ -25,15 +25,7 @@ int main(int argc, char* args[])
 		game->clean();
 	}
 	else {
-		//Testing environment
-		Sphere* sp = nullptr;
-		Sphere sp2(Float3(0, 0, 0), 1, SPHERE_STD);
-
-		if (typeid(sp).hash_code() == typeid(sp2).hash_code())
-			std::cout << "They are comparable!" << std::endl;
-
-
-
+	
 
 		
 

@@ -131,14 +131,12 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="ObjectWorld.cpp" />
     <ClCompile Include="Raycaster.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Geometry.h" />
-    <ClInclude Include="ObjectWorld.h" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="Settings.h" />
   </ItemGroup>
