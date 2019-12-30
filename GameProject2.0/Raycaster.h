@@ -1,5 +1,5 @@
 #pragma once
-#include "Geometry.h"
+#include "WorldObject.h"
 
 
 
@@ -24,7 +24,7 @@ public:
 
 
 
-	RGB_COLOR raytrace(const Sphere* sphere, const Float3& ligth, int bounces);
+	RGB_COLOR raytrace(const Gobject* go, const Float3& ligth, int bounces);
 	void step();
 	void changeTarget(const Float3& newTarget);
 	void resetDist();
@@ -33,14 +33,14 @@ public:
 	void setDir(const Float3& direction);
 	void setStepLen(float newLen);
 	void print();
-	float minDist(const Sphere* sphere);
-	int ioco(const Sphere* sphere); //index of closest object
+	float minDist(const Gobject* go);
+	int ioco(const Gobject* go); //index of closest object
 
 private:
 	Float3 pos;
 	Float3 dir;
 	float stepLen;
-	const float minStepLen = MIN_STEP_LENGTH;
+	const float minStepLen = 0;//MIN_STEP_LENGTH;
 	float dist;
 	float maxDist;
 };
@@ -50,9 +50,9 @@ class Camera {
 public:
 	Camera(float distanceToScreen, int screenWidth, int screenHeight, const Float2& dimensions, const Float3& position);
 	~Camera();
-	void renderComplete(const Sphere& sphere, unsigned char* pixels, int pitch);
-	void renderRow(const Sphere* sphere, unsigned char* pixels, int pitch, int row, const Float3& lightSource);
-	bool pixelIntersects(int x, int y, const Sphere& sphere);
+	void renderComplete(const Gobject* go, unsigned char* pixels, int pitch);
+	void renderRow(const Gobject* go, unsigned char* pixels, int pitch, int row, const Float3& lightSource);
+	bool pixelIntersects(int x, int y, const Gobject* go);
 	Float3 vectorToPixel(int x, int y);
 
 	void print();

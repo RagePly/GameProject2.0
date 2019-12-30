@@ -62,6 +62,7 @@ private:
 	void handleKeyboardInput(const Uint8* keyStates);
 	
 	bool isRunning;
+	bool memoryAddressReset;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	Uint32 elapsedTime;
@@ -75,7 +76,7 @@ private:
 	int counter;
 
 	Camera* cam;
-	Sphere* sphere;
+	Gobject* gos;
 	Float3* ligth;
 };
 

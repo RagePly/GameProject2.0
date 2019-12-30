@@ -75,6 +75,10 @@ float Float3::distsq(const Float3& v) const {
 	return _x * _x + _y * _y + _z * _z;
 }
 
+float Float3::dist(const Float3& v) const {
+	return sqrtf(distsq(v));
+}
+
 float Float3::getX() const{
 	return x;
 }
@@ -99,7 +103,7 @@ void Float3::setLen(const float l) {
 	mult(l);
 }
 
-void Float3::print() {
+void Float3::print() const {
 	std::cout << x << ", " << y << ", " << z << std::endl;
 }
 
@@ -179,56 +183,6 @@ float Float2::getY() const {
 	return y;
 }
 
-void Float2::print(){
+void Float2::print() const{
 	std::cout << x << ", " << y << std::endl;
-}
-
-
-//sphere
-
-Sphere::Sphere() :
-	pos(0.0f,0.0f,0.0f),
-	color(0.0f,0.0f,0.0f)
-{
-	radius = 0.0f;
-}
-
-Sphere::Sphere(const Float3& position, float radius, const RGB_COLOR& color) : 
-	pos(position),
-	color(color)
-{
-	this->radius = radius;
-}
-
-Sphere::~Sphere() {};
-
-Float3 Sphere::norm(const Float3& v) const {
-	Float3 w = v - pos;
-	w.norm();
-	return w;
-}
-
-RGB_COLOR Sphere::col() const {
-	return RGB_COLOR(color);
-}
-
-bool Sphere::intersects(const Float3& v) const {
-	return pos.distsq(v) <= radius * radius;
-}
-
-void Sphere::print() {
-	std::cout << "Position: "; pos.print();
-	std::cout << "Radius: " << radius << std::endl;
-}
-
-const Float3& Sphere::position() const {
-	return pos;
-}
-
-float Sphere::radi() const {
-	return radius;
-}
-
-float Sphere::dist(const Float3& float3) const {
-	return sqrtf(pos.distsq(float3)) - radius;
 }

@@ -10,6 +10,7 @@ Game::Game(){
 	screen = NULL;
 	keys = new cKey[CKEYS_TOTAL];
 	counter = 0;
+	memoryAddressReset = false;
 }
 Game::~Game(){}
 
@@ -48,16 +49,17 @@ void Game::init(const char* title, int xpos, int ypos, int w, int h, bool fullsc
 		screenWidth = w;
 		screenHeight = h;
 
-		sphere = new Sphere[2];
-		
-		sphere[0] = Sphere(Float3(0.0f, 1.8 * screenWidth, 0.0f), screenWidth, RGB_COLOR(1,0,0));
-		sphere[1] = Sphere(Float3(screenWidth * 0.35, 0.5 * screenWidth, - screenWidth * 0.19), screenWidth * 0.25, RGB_COLOR(0,1,0));
-		
-		
+		gos = new Gobject[2];
 
-		sphere[0].print();
-		sphere[1].print();
-		cam = new Camera(screenWidth / 2, screenWidth, screenHeight, Float2(screenWidth, screenHeight), Float3(0.0f, -500, 0.0f));
+		Sphere sp1(screenWidth);
+		Sphere sp2(screenWidth);
+
+		Transform pos1({ 0.0f, screenWidth * 2.0f, -screenWidth * 1.0f });
+		Transform pos2({ 0.0f, screenWidth * 2.0f, screenWidth * 1.0f});
+
+		gos[0] = Gobject(&sp1, pos1);
+		gos[1] = Gobject(&sp2, pos2);
+		cam = new Camera(screenWidth / 2, screenWidth, screenHeight, Float2(screenWidth, screenHeight), Float3(0.0f, 0.0f, 0.0f));
 		ligth = new Float3(-10 * screenWidth,1.8f * screenWidth, 10.0f * screenWidth);
 		
 	}
@@ -71,7 +73,20 @@ void Game::handleEvents() {
 	SDL_Event event;
 
 
-	SDL_PumpEvents();
+	SDL_PumpEvents(); //this overrides the memory position of my shape
+
+	/*
+	I therefore have to call this stupid fucking function to reset the memory address.
+	
+	*/
+
+	if (!memoryAddressReset) {
+		for (int i = 0; i < NUMBER_OF_OBJECTS; i++) {
+			gos[i].resetShape();
+		}
+		memoryAddressReset = true;
+	}
+
 	handleKeyboardInput(SDL_GetKeyboardState(NULL));
 	updateKeys();
 
@@ -93,8 +108,9 @@ void Game::handleEvents() {
 
 void Game::update(){
 	//this is fucking up my game
-	SDL_Delay(17);	
-
+	//SDL_Delay(17);	
+	
+	
 
 }
 
@@ -121,8 +137,9 @@ void Game::render() {
 	SDL_LockSurface(scrSurf);
 	unsigned char* lockedPixels = (unsigned char*)scrSurf->pixels;
 
+	
 	if (counter < screenHeight) {
-		cam->renderRow(sphere, lockedPixels, pitch, counter,*ligth);
+		cam->renderRow(gos, lockedPixels, pitch, counter,*ligth);
 		counter++;
 	}
 

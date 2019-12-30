@@ -132,6 +132,7 @@
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Raycaster.cpp" />
+    <ClCompile Include="WorldObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h" />
@@ -139,6 +140,7 @@
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="Settings.h" />
+    <ClInclude Include="WorldObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Notes.txt" />

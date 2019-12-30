@@ -13,27 +13,27 @@ Window settings
 320
 200
 */
-#define WIDTH 1920
-#define HEIGHT 1080
+#define WIDTH 1280
+#define HEIGHT 720
+#define NUMBER_OF_OBJECTS 2
 #define FULLSCREEN false
 #define TESTING false
+
 
 
 /*
 Ray Settings
 */
 
-#define MIN_STEP_LENGTH 0.09f
 #define STEP_LENGTH_THRESHOLD 0.1f
-#define ESCAPE_THRESHOLD 0.11f
+#define ESCAPE_THRESHOLD 1.02f
+#define PERCENT_WITHDRAWAL 0.99;
 #define MAX_LENGTH 5000
 #define MAX_BOUNCE_LIMIT 1
 
-/*
-Extra settings
-*/
 
-#define BWTEST true
-#define LERPTHRESHOLD 0.5f
-
-
+enum shape_id {
+	id_empty,
+	id_sphere,
+	id_total
+};

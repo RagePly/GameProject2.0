@@ -10,7 +10,6 @@ const int SCREEN_HEIGHT = HEIGHT;
 int main(int argc, char* args[])
 {
 	
-
 	if (!TESTING) {
 		Game* game = new Game();
 
@@ -25,7 +24,9 @@ int main(int argc, char* args[])
 		game->clean();
 	}
 	else {
-	
+		//Testing
+		
+		
 
 		
 

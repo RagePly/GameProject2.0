@@ -11,17 +11,6 @@ Raycaster::Raycaster(int screenHeight, int screenWidth, int pitch) :
 };
 Raycaster::~Raycaster() {};
 
-/*void Raycaster::renderComplete(const Sphere& sphere, unsigned char* pixels) {
-	for (int y = 0; y < screenHeight; y++) {
-		for (int x = 0; x < screenWidth; x++) {
-			if()
-		}
-	}
-}
-*/
-
-
-
 
 
 Camera::Camera(float dstToScr, int screenWidth, int screenHeight, const Float2& dim, const Float3& pos) : 
@@ -51,31 +40,12 @@ int signOf(int i) {
 	else return 1;
 }
 
-/*
-void Camera::renderComplete(const Sphere& sphere, unsigned char* pixels, int pitch) {
-	for (int y = 0; y < screenHeight; y++) {
-		for (int x = 0; x < screenWidth; x++) {
-			Ray ray(pos, vectorToPixel(x, y), STEP_LENGTH, MAX_LENGTH);
-			if (ray.intersects(sphere)) {
-				pixels[y * pitch + 4 * x] = 255;
-				pixels[y * pitch + 4 * x + 1] = 255;
-				pixels[y * pitch + 4 * x + 2] = 255;
-			}
-			else {
-				pixels[y * pitch + 4 * x] = 0;
-				pixels[y * pitch + 4 * x + 1] = 0;
-				pixels[y * pitch + 4 * x + 2] = 0;
-			}
-		}
-	}
-}
-*/
 
-void Camera::renderRow(const Sphere* sphere, unsigned char* pixels, int pitch, int row, const Float3& ligth) {
+void Camera::renderRow(const Gobject* go, unsigned char* pixels, int pitch, int row, const Float3& ligth) {
 	int y = row;
 	for (int x = 0; x < screenWidth; x++) {
 		Ray ray(pos, vectorToPixel(x, y), 1, MAX_LENGTH);
-		RGB_COLOR color = ray.raytrace(sphere, ligth, 0);
+		RGB_COLOR color = ray.raytrace(go, ligth, 0);
 
 		pixels[y * pitch + 4 * x] = color.BLUE;
 		pixels[y * pitch + 4 * x + 1] = color.GREEN;
@@ -138,57 +108,34 @@ float lerpf(float a, float b, float t) {
 	return a + t * (b - a);
 }
 
-RGB_COLOR Ray::raytrace(const Sphere* sphere,const Float3& light, int bounces) {
+RGB_COLOR Ray::raytrace(const Gobject* go,const Float3& light, int bounces) {
 	while (dist < maxDist) {
-		setStepLen(minDist(sphere));
+		setStepLen(minDist(go));
 		step();
 		if (stepLen <= STEP_LENGTH_THRESHOLD) {
 
 			if (bounces == MAX_BOUNCE_LIMIT) {
 				return SPHERE_STD;
 			}
-			else if (bounces == MAX_BOUNCE_LIMIT - 1 && !BWTEST) {
-				Sphere closest = sphere[ioco(sphere)];
+			else if (bounces == MAX_BOUNCE_LIMIT - 1) {
+				Gobject closest =  go[ioco(go)];
 				bounces++;
-				Float3 norm = closest.norm(pos);
-				norm.setLen(closest.radi() + ESCAPE_THRESHOLD);
-				norm = closest.position() + norm ;
+				Float3 norm = closest.normToSurf(pos);
+				norm.setLen(Gobject::SPHERE_RADI(closest) + ESCAPE_THRESHOLD * STEP_LENGTH_THRESHOLD);
+				norm = closest.tf.pos + norm ;
 				setPos(norm);
 
 				changeTarget(light);
-				return raytrace(sphere, light, bounces);
-			}
-			else if (bounces == MAX_BOUNCE_LIMIT - 1) {
-				Sphere closest = sphere[ioco(sphere)];
-				Float3 norm = closest.norm(pos);
-				Float3 toLight = light - pos;
-				toLight.norm();
-				float dotProduct = toLight.dot(norm);
-
-				if (dotProduct > 0 && dotProduct < LERPTHRESHOLD) {
-					char in = lerpc(0, 255, (dotProduct / LERPTHRESHOLD));
-					if (closest.col().RED == 1)
-						return RGB_COLOR(in, 0, 0);
-					else return RGB_COLOR(0, 0, in);
-				}
-				else if (dotProduct >= LERPTHRESHOLD) {
-					if (closest.col().RED == 1) {
-						return RGB_COLOR(255, 0, 0);
-					}
-					else return RGB_COLOR(0, 0, 255);
-				}
-				else return SKY_COLOR;
-				
+				return raytrace(go, light, bounces);
 			}
 			else {
-				Sphere closest = sphere[ioco(sphere)];
+				Gobject closest = go[ioco(go)];
 				bounces++;
-				Float3 n = closest.norm(pos);
+				Float3 n = closest.normToSurf(pos);
 				Float3 pp(n);
-				pp.setLen(closest.radi() + ESCAPE_THRESHOLD);
-				pp = closest.position() + pp;
+				pp.setLen(Gobject::SPHERE_RADI(closest) + ESCAPE_THRESHOLD);
+				pp = closest.tf.pos + pp;
 				setPos(pp);
-
 				n.mult(2.0f * dir.dot(n));
 				Float3 dirp = dir - n;
 				setDir(dirp);
@@ -196,14 +143,14 @@ RGB_COLOR Ray::raytrace(const Sphere* sphere,const Float3& light, int bounces) {
 
 				//bouncing color
 				Ray bouncingRay(*this);
-				RGB_COLOR color1 = bouncingRay.raytrace(sphere, light, bounces);
+				RGB_COLOR color1 = bouncingRay.raytrace(go, light, bounces);
 				changeTarget(light);
 
-				RGB_COLOR color2 = raytrace(sphere, light, MAX_BOUNCE_LIMIT);
+				RGB_COLOR color2 = raytrace(go, light, MAX_BOUNCE_LIMIT);
 
 				RGB_COLOR color;
 
-				if (color1.BLUE == 50 || color1.BLUE == 200) {
+				if (color1.BLUE == 50 || color1.BLUE == 255) {
 					color.BLUE = color1.BLUE;
 					color.RED = color1.RED;
 					color.GREEN = color1.GREEN;
@@ -225,20 +172,20 @@ RGB_COLOR Ray::raytrace(const Sphere* sphere,const Float3& light, int bounces) {
 	return SKY_COLOR;
 }
 
-float Ray::minDist(const Sphere* spheres) {
+float Ray::minDist(const Gobject* go) {
 	float min = FLT_MAX;
-	for (int i = 0; i < 2; i++) {
-		float distance = spheres[i].dist(pos);
+	for (int i = 0; i < NUMBER_OF_OBJECTS; i++) {
+		float distance = go[i].distToSurf(pos);
 		if (distance < min) min = distance;
 	}
-	return min;
+	return min * PERCENT_WITHDRAWAL;
 }
 
-int Ray::ioco(const Sphere* sphere) {
+int Ray::ioco(const Gobject* go) {
 	float min = FLT_MAX;
 	int in = 0;
-	for (int i = 0; i < 2; i++) {
-		float distance = sphere[i].dist(pos);
+	for (int i = 0; i < NUMBER_OF_OBJECTS; i++) {
+		float distance = go[i].tf.pos.dist(pos);
 		if (distance < min) {
 			min = distance;
 			in = i;
@@ -262,10 +209,10 @@ void Ray::setMaxDist(float newMaxDistance) {
 }
 
 void Ray::setStepLen(float newStepLen) {
-	if (newStepLen >= MIN_STEP_LENGTH) {
+	//if (newStepLen >= MIN_STEP_LENGTH) {
 		stepLen = newStepLen;
-	}
-	else stepLen = MIN_STEP_LENGTH;
+	//}
+	//else stepLen = MIN_STEP_LENGTH;
 	dir.setLen(stepLen);
 }
 
