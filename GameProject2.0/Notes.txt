@@ -30,6 +30,17 @@ Pixel Format
 	alternative 
 
 
+	Rasterizer NOTES
+
+
+	TODO: 
+		- Make the camera move
+		- Have a draw function for the rasterizer that updates every frame
+			- Only active when the raycaster isnt printing
+		- The rasterizer only needs a pointer to the gameWorld
+		- Create the razsterizer
+			- How does it work:
+				- 
 
 
 
