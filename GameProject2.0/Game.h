@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include <vector>
-#include "Raycaster.h"
+#include "Rasterizer.h"
 
 struct cKey {
 public:

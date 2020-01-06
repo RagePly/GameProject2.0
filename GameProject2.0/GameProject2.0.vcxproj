@@ -131,6 +131,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Rasterizer.cpp" />
     <ClCompile Include="Raycaster.cpp" />
     <ClCompile Include="WorldObject.cpp" />
   </ItemGroup>
@@ -138,6 +139,7 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Geometry.h" />
+    <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="WorldObject.h" />

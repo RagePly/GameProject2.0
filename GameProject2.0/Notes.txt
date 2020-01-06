@@ -5,7 +5,8 @@ structure
 	color.h		:settings.h
 	geometry.h	:color.h
 	raycaster.h	:geometry.h
-	game.h		:raycaster.h, vector, SDL.h
+	rasterizer.h :raycaster.h
+	game.h		:rasterizer.h, vector, SDL.h
 
 
 

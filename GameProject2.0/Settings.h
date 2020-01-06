@@ -29,7 +29,7 @@ Ray Settings
 #define ESCAPE_THRESHOLD 1.02f
 #define PERCENT_WITHDRAWAL 0.99;
 #define MAX_LENGTH 5000
-#define MAX_BOUNCE_LIMIT 1
+#define MAX_BOUNCE_LIMIT 100
 
 
 enum shape_id {
