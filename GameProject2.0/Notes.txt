@@ -44,3 +44,4 @@ Pixel Format
 
 
 
+Maths about shadows are on page 171
