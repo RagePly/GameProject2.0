@@ -25,10 +25,18 @@ int main(int argc, char* args[])
 	}
 	else {
 		//Testing
-		
-		
+		World world;
 
+		for (int i = 0; i < 11; i++) {
+			Transform tf({ (float) i,i + 1.0f,i + 2.0f }, { i + 3.0f,i + 4.0f });
+			Sphere sp((float) i + 5);
+			Gobject go(&sp, tf);
+			world.add(go);
+		}
 		
+		world.apply(); //fuck this shit
+
+		world.print();
 
 
 	}

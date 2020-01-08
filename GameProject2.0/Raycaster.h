@@ -51,7 +51,7 @@ public:
 	Camera(float distanceToScreen, int screenWidth, int screenHeight, const Float2& dimensions, const Float3& position);
 	~Camera();
 	void renderComplete(const Gobject* go, unsigned char* pixels, int pitch);
-	void renderRow(const Gobject* go, unsigned char* pixels, int pitch, int row, const Float3& lightSource);
+	void renderRow(World* world, unsigned char* pixels, int pitch, int row, const Float3& lightSource);
 	bool pixelIntersects(int x, int y, const Gobject* go);
 	Float3 vectorToPixel(int x, int y);
 

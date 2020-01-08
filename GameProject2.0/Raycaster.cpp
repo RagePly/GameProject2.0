@@ -41,8 +41,9 @@ int signOf(int i) {
 }
 
 
-void Camera::renderRow(const Gobject* go, unsigned char* pixels, int pitch, int row, const Float3& ligth) {
+void Camera::renderRow(World* world, unsigned char* pixels, int pitch, int row, const Float3& ligth) {
 	int y = row;
+	Gobject* go = world->getAllGobj();
 	for (int x = 0; x < screenWidth; x++) {
 		Ray ray(pos, vectorToPixel(x, y), 1, MAX_LENGTH);
 		RGB_COLOR color = ray.raytrace(go, ligth, 0);

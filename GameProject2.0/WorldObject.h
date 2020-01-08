@@ -6,9 +6,12 @@ class Transform {
 public:
 	Transform();
 	Transform(Float3 pos);
+	Transform(Float3 pos, Float2 rot);
+	Transform(Float2 rot);
 	~Transform();
 
 	Float3 pos;
+	Float2 rot;
 	void print() const;
 private:
 	//TODO: check the ability to have a private backup of the position
@@ -93,6 +96,20 @@ private:
 };
 
 
+class World {
+public:
+	World();
+	~World();
+	void print();
+	void add(const Gobject& gobject);
+	void apply();
+	Gobject* getAllGobj();
+	int nrGobj;
 
+private:
+	int max;
+	Gobject* gobjects;
 
+	void _extendArr();
+};
 

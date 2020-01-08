@@ -19,7 +19,11 @@ Window settings
 #define FULLSCREEN false
 #define TESTING false
 
-
+/*
+World settings
+*/
+#define WORLD_EXPAND_INCREMENT 10
+#define WORLD_STARTING_SIZE 10
 
 /*
 Ray Settings

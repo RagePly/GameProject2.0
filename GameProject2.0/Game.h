@@ -76,7 +76,7 @@ private:
 	int counter;
 
 	Camera* cam;
-	Gobject* gos;
+	World* world;
 	Float3* ligth;
 };
 

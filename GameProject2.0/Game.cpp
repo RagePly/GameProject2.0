@@ -49,7 +49,7 @@ void Game::init(const char* title, int xpos, int ypos, int w, int h, bool fullsc
 		screenWidth = w;
 		screenHeight = h;
 
-		gos = new Gobject[2];
+		world = new World();
 
 		Sphere sp1(screenWidth);
 		Sphere sp2(screenWidth);
@@ -57,8 +57,8 @@ void Game::init(const char* title, int xpos, int ypos, int w, int h, bool fullsc
 		Transform pos1({ 0.0f, screenWidth * 2.0f, -screenWidth * 1.0f });
 		Transform pos2({ 0.0f, screenWidth * 2.0f, screenWidth * 1.0f});
 
-		gos[0] = Gobject(&sp1, pos1);
-		gos[1] = Gobject(&sp2, pos2);
+		world->add(Gobject(&sp1, pos1));
+		world->add(Gobject(&sp2, pos2));
 		cam = new Camera(screenWidth / 2, screenWidth, screenHeight, Float2(screenWidth, screenHeight), Float3(0.0f, 0.0f, 0.0f));
 		ligth = new Float3(-10 * screenWidth,1.8f * screenWidth, 10.0f * screenWidth);
 		
@@ -81,9 +81,7 @@ void Game::handleEvents() {
 	*/
 
 	if (!memoryAddressReset) {
-		for (int i = 0; i < NUMBER_OF_OBJECTS; i++) {
-			gos[i].resetShape();
-		}
+		world->apply();
 		memoryAddressReset = true;
 	}
 
@@ -139,7 +137,7 @@ void Game::render() {
 
 	
 	if (counter < screenHeight) {
-		cam->renderRow(gos, lockedPixels, pitch, counter,*ligth);
+		cam->renderRow(world, lockedPixels, pitch, counter,*ligth);
 		counter++;
 	}
 

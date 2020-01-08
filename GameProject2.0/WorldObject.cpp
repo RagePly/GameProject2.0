@@ -1,12 +1,39 @@
 #include "WorldObject.h"
 
-Transform::Transform() : pos(0, 0, 0) {};
-Transform::Transform(Float3 pos) : pos(pos) {};
+
+
+
+
+Transform::Transform() 
+	: 
+	pos(0, 0, 0),
+	rot(0,0)
+{};
+
+Transform::Transform(Float3 pos)
+	: 
+	pos(pos),
+	rot(0,0)
+{};
+
+Transform::Transform(Float3 pos, Float2 rot)
+	:
+	pos(pos),
+	rot(rot)
+{};
+
+Transform::Transform(Float2 rot)
+	:
+	pos(0, 0, 0),
+	rot(rot)
+{};
+
 Transform::~Transform() {};
 
 
 void Transform::print() const {
-	std::cout << "Position: "; pos.print();
+	std::cout << "Position: "; pos.print(); //the pos print function has a std::endl;
+	std::cout << "Rotation: "; rot.print();
 }
 
 
@@ -40,7 +67,7 @@ void Sphere::print() const {
 		"Radius: " << radius << std::endl;
 }
 
-float* Sphere::getData() {
+float *Sphere::getData() {
 	return &radius;
 }
 
@@ -57,7 +84,7 @@ Gobject::Gobject(Shape* shape, Transform& tf)
 	empty(shape)
 {
 	this->tf = tf;
-	setupShape(shape);
+	resetShape();
 }
 
 Gobject::Gobject(Shape* shape) : id(shape->id()) {
@@ -72,7 +99,7 @@ Gobject::Gobject(Transform& tf) : id(id_empty) {
 Gobject::~Gobject() {};
 
 void Gobject::setupShape(Shape* shape) {
-	
+	resetShape(); //same functionality, maybe work on renaming
 }
 
 void Gobject::resetShape() {
@@ -107,4 +134,53 @@ float Gobject::SPHERE_RADI(Gobject& go) {
 		return go.sphere.getRadius();
 	}
 	else return 0.0f;
+}
+
+//-----------------------------------------------------
+//WORLD
+//-----------------------------------------------------
+
+
+World::World() {
+	gobjects = new Gobject[WORLD_STARTING_SIZE];
+	max = WORLD_STARTING_SIZE;
+	nrGobj = 0;
+}
+
+World::~World() {
+	delete[] gobjects;
+}
+
+void World::print() {
+	for (int i = 0; i < nrGobj; i++) {
+		gobjects[i].print();
+	}
+}
+
+Gobject* World::getAllGobj() {
+	return gobjects;
+}
+
+
+void World::add(const Gobject& obj) {
+	if (nrGobj == max) {
+		_extendArr();
+	}
+	gobjects[nrGobj] = obj; //TODO: Check if this causes errors.
+	nrGobj++;
+}
+
+void World::apply() {
+	for (int i = 0; i < nrGobj; i++) {
+		gobjects[i].resetShape();
+	}
+}
+
+void World::_extendArr() { //manual array copy
+	Gobject* _gobj = new Gobject[max + WORLD_EXPAND_INCREMENT];
+	for (int i = 0; i < max; i++) {
+		_gobj[i] = gobjects[i];
+	}
+	max += WORLD_EXPAND_INCREMENT;
+	gobjects = _gobj;
 }
