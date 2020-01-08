@@ -39,5 +39,6 @@ Ray Settings
 enum shape_id {
 	id_empty,
 	id_sphere,
+	id_camerobj,
 	id_total
 };

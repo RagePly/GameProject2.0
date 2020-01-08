@@ -48,6 +48,23 @@ public:
 	int id() const { return id_empty; };
 };
 
+class CameraObj : public Shape {
+public:
+	CameraObj() {};
+	CameraObj(Shape* shape) {};
+	~CameraObj() {};
+
+	bool intersect(const Float3& point, const Transform& tf) const { return false; };
+	Float3 normToSurf(const Float3& target, const Transform& tf) const { return Float3(0, 0, 0); };
+	float distToSurf(const Float3& target, const Transform& tf) const { return tf.pos.dist(target); };
+	void print() const {
+		std::cout << "Type: CameraObj" << std::endl;
+	};
+	float* getData() { return nullptr; };
+	int id() const { return id_camerobj; };
+
+};
+
 
 class Sphere : public Shape {
 public:
@@ -91,6 +108,7 @@ private:
 	void setupShape(Shape* shape);
 	EMPTY empty;
 	Sphere sphere;
+	CameraObj camobj;
 	
 	//TODO: SIMILAR COMMENT THAT APPEARED AT TRANSFORM
 };

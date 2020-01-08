@@ -81,13 +81,20 @@ Gobject::Gobject() : id(id_empty){
 Gobject::Gobject(Shape* shape, Transform& tf)
 	: id(shape->id()),
 	sphere(shape),
-	empty(shape)
+	empty(shape),
+	camobj(shape)
 {
 	this->tf = tf;
-	resetShape();
+	setupShape(shape);
 }
 
-Gobject::Gobject(Shape* shape) : id(shape->id()) {
+Gobject::Gobject(Shape* shape) 
+	: 
+	id(shape->id()),
+	sphere(shape),
+	empty(shape),
+	camobj(shape) 
+{
 	setupShape(shape);
 }
 
@@ -99,7 +106,7 @@ Gobject::Gobject(Transform& tf) : id(id_empty) {
 Gobject::~Gobject() {};
 
 void Gobject::setupShape(Shape* shape) {
-	resetShape(); //same functionality, maybe work on renaming
+	resetShape();
 }
 
 void Gobject::resetShape() {
@@ -107,7 +114,11 @@ void Gobject::resetShape() {
 	case id_sphere:
 		this->shape = &sphere;
 		break;
+	case id_camerobj:
+		this->shape = &camobj;
+		break;
 	default:
+		this->shape = &empty;
 		break;
 	}
 }
