@@ -54,3 +54,13 @@ private:
 	float x;
 	float y;
 };
+
+
+class Int2 {
+public:
+	int x, y;
+
+	Int2();
+	Int2(int x, int y);
+	~Int2();
+};

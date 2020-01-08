@@ -186,3 +186,20 @@ float Float2::getY() const {
 void Float2::print() const{
 	std::cout << x << ", " << y << std::endl;
 }
+
+Int2::Int2() 
+	:
+	x(0),
+	y(0)
+{}
+
+Int2::Int2(int x, int y)
+	:
+	x(x),
+	y(y)	
+{}
+
+
+Int2::~Int2()
+{}
+
