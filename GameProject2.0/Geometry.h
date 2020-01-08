@@ -64,3 +64,9 @@ public:
 	Int2(int x, int y);
 	~Int2();
 };
+
+
+/*
+float cos(float theta);
+float sin(float theta);
+*/

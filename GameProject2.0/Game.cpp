@@ -50,19 +50,34 @@ void Game::init(const char* title, int xpos, int ypos, int w, int h, bool fullsc
 		screenHeight = h;
 
 		world = new World();
+		Transform pos1({ 0,3,0 });
+		Transform pos2({ 1,3,0 });
+		Transform pos3({ 1,4,0 });
+		Transform pos4({ 0,4,0 });
+		Transform pos5({ 0,3,1 });
+		Transform pos6({ 1,3,1 });
+		Transform pos7({ 1,4,1 });
+		Transform pos8({ 0,4,1 });
 
-		Sphere sp1(screenWidth);
-		Sphere sp2(screenWidth);
+		world->add(Gobject(pos1));
+		world->add(Gobject(pos2));
+		world->add(Gobject(pos3));
+		world->add(Gobject(pos4));
+		world->add(Gobject(pos5));
+		world->add(Gobject(pos6));
+		world->add(Gobject(pos7));
+		world->add(Gobject(pos8));
 
-		Transform pos1({ 0.0f, screenWidth * 2.0f, -screenWidth * 1.0f });
-		Transform pos2({ 0.0f, screenWidth * 2.0f, screenWidth * 1.0f});
+		Transform camPos({ 0,0,0 });
+		Gobject* camera = new Gobject(new CameraObj(), camPos);
+		RastCam* rastCam = new RastCam(camera, Int2(w, h), Float2(1.0f, 0.5625f), 1);
 
-		world->add(Gobject(&sp1, pos1));
-		world->add(Gobject(&sp2, pos2));
-		cam = new Camera(screenWidth / 2, screenWidth, screenHeight, Float2(screenWidth, screenHeight), Float3(0.0f, 0.0f, 0.0f));
-		ligth = new Float3(-10 * screenWidth,1.8f * screenWidth, 10.0f * screenWidth);
-		
+		rast = new Rasterizer();
+
+		rast->addCamera(rastCam);
+		rast->addGameWorldReference(world);
 	}
+
 	else {
 		isRunning = false;
 	}
@@ -135,11 +150,16 @@ void Game::render() {
 	SDL_LockSurface(scrSurf);
 	unsigned char* lockedPixels = (unsigned char*)scrSurf->pixels;
 
-	
+	rast->renderImage(lockedPixels);
+	std::cout << "image rendered" << std::endl;
+
+
+	/*
 	if (counter < screenHeight) {
 		cam->renderRow(world, lockedPixels, pitch, counter,*ligth);
 		counter++;
 	}
+	*/
 
 	SDL_UpdateTexture(screen, NULL, lockedPixels,scrSurf->pitch);
 

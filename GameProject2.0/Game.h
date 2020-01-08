@@ -75,8 +75,8 @@ private:
 	int pitch;
 	int counter;
 
-	Camera* cam;
+	
 	World* world;
-	Float3* ligth;
+	Rasterizer* rast;
 };
 

@@ -203,3 +203,20 @@ Int2::Int2(int x, int y)
 Int2::~Int2()
 {}
 
+/*
+
+float cos(float theta) {
+	return 1.0f -
+		(theta * theta) / 2.0f +
+		(theta * theta * theta * theta) / 24.0f -
+		(theta * theta * theta * theta * theta * theta) / 720.0f;
+}
+
+float sin(float theta) {
+	return theta - 
+		(theta * theta * theta) / 6.0f + 
+		(theta * theta * theta * theta * theta) / 120.0f - 
+		(theta * theta * theta * theta * theta * theta * theta) / 5040.0f;
+}
+
+*/
