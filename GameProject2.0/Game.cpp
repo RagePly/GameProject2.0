@@ -150,7 +150,7 @@ void Game::render() {
 	SDL_LockSurface(scrSurf);
 	unsigned char* lockedPixels = (unsigned char*)scrSurf->pixels;
 
-	//rast->renderImage(lockedPixels);
+	rast->renderImage(lockedPixels);
 	//std::cout << "image rendered" << std::endl;
 
 

@@ -56,6 +56,27 @@ float RastCam::getsH() const{
 };
 
 
+CamStat RastCam::getCamStat() const {
+	CamStat newStats;
+	newStats.cx = getX();
+	newStats.cy = getY();
+	newStats.cz = getZ();
+	newStats.distToScr = distToScreen;
+	newStats.scrH = getsH();
+	newStats.scrW = getsW();
+	newStats.pixH = getpH();
+	newStats.pixW = getpW();
+
+	newStats.cos1 = cos(-getRotX());
+	newStats.cos2 = cos(-getRotZ());
+	newStats.sin1 = sin(-getRotX());
+	newStats.sin2 = sin(-getRotZ());
+
+
+	return newStats;
+}
+
+
 Rasterizer::Rasterizer() {}
 Rasterizer::~Rasterizer() {
 	delete gWorld;
@@ -71,55 +92,46 @@ void Rasterizer::addGameWorldReference(World* gWorld) {
 }
 
 void Rasterizer::renderImage(unsigned char* pixels) {
-	float cx = rastCam->getX();
-	float cy = rastCam->getY();
-	float cz = rastCam->getZ();
-	float distToScr = rastCam->distToScreen;
-	float scrH = rastCam->getsH();
-	float scrW = rastCam->getsW();
-	int pixH = rastCam->getpH();
-	int pixW = rastCam->getpW();
-
-	float cos1 = cos(-rastCam->getRotX());
-	float cos2 = cos(-rastCam->getRotZ());
-	float sin1 = sin(-rastCam->getRotX());
-	float sin2 = sin(-rastCam->getRotZ());
+	CamStat stat = rastCam->getCamStat();
 
 	for (int i = 0; i < gWorld->nrGobj; i++) {
 		Gobject obj = gWorld->getAllGobj()[i];
 		if (obj.id == id_camerobj) continue;
 
 		//moving origin to camera pos
-		float xp = obj.tf.pos.getX() - cx;
-		float yp = obj.tf.pos.getY() - cy;
-		float zp = obj.tf.pos.getZ() - cz;
+		float xp = obj.tf.pos.getX() - stat.cx;
+		float yp = obj.tf.pos.getY() - stat.cy;
+		float zp = obj.tf.pos.getZ() - stat.cz;
 
 		//rotating around origo and move origo to the eye (which is distToScr neg y direction from camera)
-		xp = cos1 * cos2 * xp - cos1 * sin2 * yp;
-		yp = cos1 * sin2 * xp + cos1 * cos2 * yp - sin1 * yp + distToScr;
-		zp = sin1 * xp + sin1 * yp + cos1 * zp;
+		xp = stat.cos1 * stat.cos2 * xp - stat.cos1 * stat.sin2 * yp;
+		yp = stat.cos1 * stat.sin2 * xp + stat.cos1 * stat.cos2 * yp - stat.sin1 * yp + stat.distToScr;
+		zp = stat.sin1 * xp + stat.sin1 * yp + stat.cos1 * zp;
 
-		float s = distToScr / yp; //find the scaling required to land on the screen plane
+		float s = stat.distToScr / yp; //find the scaling required to land on the screen plane
 
 		if (s < 0.0f || s > 1.0f) continue; //if the point is behind the screen
 
 		//scale vector onto screen plane and invert y (previous z) axis, also shifting origo to top left
-		xp = s*xp + scrW / 2.0f;
-		yp = -s * zp + scrH / 2.0f; //pretty sure on the + here, check notebook
+		xp = s*xp + stat.scrW / 2.0f;
+		yp = -s * zp + stat.scrH / 2.0f; //pretty sure on the + here, check notebook
 
 		//scale to fit screen
-		xp *= pixW / scrW;
-		yp *= pixH / scrH;
+		xp *= stat.pixW / stat.scrW;
+		yp *= stat.pixH / stat.scrH;
 
 		int x = (int)floor(xp);
 		int y = (int)floor(yp);
 
-		if (x > pixW || x < 0 || y > pixH || y < 0) continue; //final criteria
+		if (x > stat.pixW || x < 0 || y > stat.pixH || y < 0) continue; //final criteria
 
 		//DRAW!
-		pixels[y * pixW * 4 + x * 4] = 255;
-		pixels[y * pixW * 4 + x * 4 + 1] = 255;
-		pixels[y * pixW * 4 + x * 4 + 2] = 255;
+		pixels[y * stat.pixW * 4 + x * 4] = 255;
+		pixels[y * stat.pixW * 4 + x * 4 + 1] = 255;
+		pixels[y * stat.pixW * 4 + x * 4 + 2] = 255;
 	}
 
+	
+
 }
+

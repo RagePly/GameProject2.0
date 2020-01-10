@@ -1,6 +1,24 @@
 #pragma once
 #include "Raycaster.h"
 
+
+struct CamStat {
+public:
+	float cx;
+	float cy;
+	float cz;
+	float distToScr;
+	float scrH;
+	float scrW;
+	int pixH;
+	int pixW;
+	float cos1;
+	float cos2;
+	float sin1;
+	float sin2;
+};
+
+
 class RastCam {
 public:
 	Int2 pixDim;
@@ -23,9 +41,12 @@ public:
 	float getsW() const;
 	float getsH() const;
 
+	CamStat getCamStat() const;
+
 private:
 	Gobject* camerObj;
 };
+
 
 class Rasterizer {
 public:
@@ -36,7 +57,9 @@ public:
 	void addGameWorldReference(World* gWorld);
 
 	void renderImage(unsigned char* pixels);
+	//Int2 transformPointToScreen(const Float3 &point) const;
 private:
 	World* gWorld;
 	RastCam* rastCam;
+	CamStat camStat;
 };
