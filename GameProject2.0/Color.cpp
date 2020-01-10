@@ -21,3 +21,28 @@ RGB_COLOR::RGB_COLOR(const RGB_COLOR& color) {
 RGB_COLOR::~RGB_COLOR(){}
 
 
+Painter::Painter() :
+	lockedPixels(nullptr),
+	working(false),
+	w(0),h(0)
+{}
+
+Painter::Painter(int w, int h) :
+	lockedPixels(nullptr),
+	working(false),
+	w(w), h(h)
+{}
+
+Painter::~Painter() {}
+
+void Painter::beginDrawing(unsigned char* lockedPixels) {
+	this->lockedPixels = lockedPixels;
+	working = true;
+}
+
+void Painter::draw(int x, int y) {
+	lockedPixels[y * 4 * w + x * 4] = 255;
+	lockedPixels[y * 4 * w + x * 4 + 1] = 255;
+	lockedPixels[y * 4 * w + x * 4 + 2] = 255;
+}
+

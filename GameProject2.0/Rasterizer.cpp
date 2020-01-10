@@ -78,9 +78,13 @@ CamStat RastCam::getCamStat() const {
 }
 
 
-Rasterizer::Rasterizer() {}
+Rasterizer::Rasterizer():
+	gWorld(nullptr),
+	rastCam(nullptr),
+	painter(nullptr),
+	camStat()
+{}
 Rasterizer::~Rasterizer() {
-	delete gWorld;
 	delete rastCam;
 }
 
@@ -92,7 +96,11 @@ void Rasterizer::addGameWorldReference(World* gWorld) {
 	this->gWorld = gWorld;
 }
 
-void Rasterizer::renderImage(unsigned char* pixels) {
+void Rasterizer::addPainter(Painter* painter) {
+	this->painter = painter;
+}
+
+void Rasterizer::renderImage() {
 	CamStat cam = rastCam->getCamStat();
 
 	for (int i = 0; i < gWorld->nrGobj; i++) {
@@ -104,12 +112,8 @@ void Rasterizer::renderImage(unsigned char* pixels) {
 		if (pointStat.behindScreen || !pointStat.insideScreen) continue;
 		
 		//Draw if all conditions are met
-		pixels[pointStat.pos.y * camStat.pixW * 4 + pointStat.pos.x * 4] = 255;
-		pixels[pointStat.pos.y * camStat.pixW * 4 + pointStat.pos.x * 4 + 1] = 255;
-		pixels[pointStat.pos.y * camStat.pixW * 4 + pointStat.pos.x * 4 + 2] = 255;
+		painter->draw(pointStat.pos.x, pointStat.pos.y);
 	}
-
-	
 }
 
 void Rasterizer::updateCamStats() {

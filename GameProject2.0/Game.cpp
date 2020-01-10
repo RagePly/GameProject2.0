@@ -73,9 +73,11 @@ void Game::init(const char* title, int xpos, int ypos, int w, int h, bool fullsc
 		RastCam* rastCam = new RastCam(camera, Int2(w, h), Float2(1.0f, 0.5625f), 1);
 
 		rast = new Rasterizer();
+		painter = new Painter(w, h);
 
 		rast->addCamera(rastCam);
 		rast->addGameWorldReference(world);
+		rast->addPainter(painter);
 	}
 
 	else {
@@ -149,8 +151,11 @@ void Game::render() {
 	
 	SDL_LockSurface(scrSurf);
 	unsigned char* lockedPixels = (unsigned char*)scrSurf->pixels;
+	painter->beginDrawing(lockedPixels);
 
-	rast->renderImage(lockedPixels);
+	rast->renderImage();
+
+	painter->finishDrawing();
 	//std::cout << "image rendered" << std::endl;
 
 
@@ -178,6 +183,10 @@ void Game::clean() {
 	SDL_DestroyTexture(screen);
 	SDL_FreeSurface(scrSurf);
 	SDL_Quit();
+
+	delete world;
+	delete painter;
+	delete rast;
 
 	std::cout << "Game cleaned" << std::endl;
 

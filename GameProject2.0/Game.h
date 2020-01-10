@@ -78,5 +78,6 @@ private:
 	
 	World* world;
 	Rasterizer* rast;
+	Painter* painter;
 };
 

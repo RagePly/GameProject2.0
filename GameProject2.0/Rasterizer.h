@@ -66,11 +66,13 @@ public:
 
 	void addCamera(RastCam* cam);
 	void addGameWorldReference(World* gWorld);
+	void addPainter(Painter* painter);
 	void updateCamStats();
-	void renderImage(unsigned char* pixels);
+	void renderImage();
 	PointStat tfPToScr(const Float3 &point) const; //Tranfsform point to screen
 private:
 	World* gWorld;
 	RastCam* rastCam;
 	CamStat camStat;
+	Painter* painter;
 };
