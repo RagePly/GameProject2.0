@@ -123,7 +123,7 @@ void Game::update(){
 	//this is fucking up my game
 	//SDL_Delay(17);	
 	
-	
+	rast->updateCamStats();
 
 }
 

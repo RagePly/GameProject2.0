@@ -19,6 +19,14 @@ public:
 };
 
 
+
+struct PointStat {
+	Int2 pos;
+	bool insideScreen = true;
+	bool behindScreen = false;
+};
+
+
 class RastCam {
 public:
 	Int2 pixDim;
@@ -42,8 +50,11 @@ public:
 	float getsH() const;
 
 	CamStat getCamStat() const;
+	bool isUpdated() const { return updated; };
+	void updateRecieved() { updated = false; };
 
 private:
+	bool updated;
 	Gobject* camerObj;
 };
 
@@ -55,9 +66,9 @@ public:
 
 	void addCamera(RastCam* cam);
 	void addGameWorldReference(World* gWorld);
-
+	void updateCamStats();
 	void renderImage(unsigned char* pixels);
-	//Int2 transformPointToScreen(const Float3 &point) const;
+	PointStat tfPToScr(const Float3 &point) const; //Tranfsform point to screen
 private:
 	World* gWorld;
 	RastCam* rastCam;

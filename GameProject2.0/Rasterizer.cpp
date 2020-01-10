@@ -5,7 +5,8 @@ RastCam::RastCam()
 	:
 	pixDim(0, 0),
 	screenDim({ 0,0 }),
-	distToScreen(0.0f)
+	distToScreen(0.0f),
+	updated(true)
 {
 	camerObj = nullptr;
 }
@@ -14,8 +15,8 @@ RastCam::RastCam(Gobject* camerObj, Int2 pixDim, Float2 screenDim, float distToS
 	:
 	pixDim(pixDim),
 	screenDim(screenDim),
-	distToScreen(distToScreen)
-
+	distToScreen(distToScreen),
+	updated(true)
 {
 	this->camerObj = camerObj;
 }
@@ -92,46 +93,63 @@ void Rasterizer::addGameWorldReference(World* gWorld) {
 }
 
 void Rasterizer::renderImage(unsigned char* pixels) {
-	CamStat stat = rastCam->getCamStat();
+	CamStat cam = rastCam->getCamStat();
 
 	for (int i = 0; i < gWorld->nrGobj; i++) {
 		Gobject obj = gWorld->getAllGobj()[i];
 		if (obj.id == id_camerobj) continue;
 
-		//moving origin to camera pos
-		float xp = obj.tf.pos.getX() - stat.cx;
-		float yp = obj.tf.pos.getY() - stat.cy;
-		float zp = obj.tf.pos.getZ() - stat.cz;
+		PointStat pointStat = tfPToScr(obj.tf.pos);
 
-		//rotating around origo and move origo to the eye (which is distToScr neg y direction from camera)
-		xp = stat.cos1 * stat.cos2 * xp - stat.cos1 * stat.sin2 * yp;
-		yp = stat.cos1 * stat.sin2 * xp + stat.cos1 * stat.cos2 * yp - stat.sin1 * yp + stat.distToScr;
-		zp = stat.sin1 * xp + stat.sin1 * yp + stat.cos1 * zp;
-
-		float s = stat.distToScr / yp; //find the scaling required to land on the screen plane
-
-		if (s < 0.0f || s > 1.0f) continue; //if the point is behind the screen
-
-		//scale vector onto screen plane and invert y (previous z) axis, also shifting origo to top left
-		xp = s*xp + stat.scrW / 2.0f;
-		yp = -s * zp + stat.scrH / 2.0f; //pretty sure on the + here, check notebook
-
-		//scale to fit screen
-		xp *= stat.pixW / stat.scrW;
-		yp *= stat.pixH / stat.scrH;
-
-		int x = (int)floor(xp);
-		int y = (int)floor(yp);
-
-		if (x > stat.pixW || x < 0 || y > stat.pixH || y < 0) continue; //final criteria
-
-		//DRAW!
-		pixels[y * stat.pixW * 4 + x * 4] = 255;
-		pixels[y * stat.pixW * 4 + x * 4 + 1] = 255;
-		pixels[y * stat.pixW * 4 + x * 4 + 2] = 255;
+		if (pointStat.behindScreen || !pointStat.insideScreen) continue;
+		
+		//Draw if all conditions are met
+		pixels[pointStat.pos.y * camStat.pixW * 4 + pointStat.pos.x * 4] = 255;
+		pixels[pointStat.pos.y * camStat.pixW * 4 + pointStat.pos.x * 4 + 1] = 255;
+		pixels[pointStat.pos.y * camStat.pixW * 4 + pointStat.pos.x * 4 + 2] = 255;
 	}
 
 	
-
 }
 
+void Rasterizer::updateCamStats() {
+	if (rastCam->isUpdated()) {
+		camStat = rastCam->getCamStat();
+		rastCam->updateRecieved();
+	}
+}
+
+PointStat Rasterizer::tfPToScr(const Float3& point) const {
+
+	PointStat stat;
+	//moving origin to camera pos
+	float xp = point.getX() - camStat.cx;
+	float yp = point.getY() - camStat.cy;
+	float zp = point.getZ() - camStat.cz;
+
+	//rotating around origo and move origo to the eye (which is distToScr neg y direction from camera)
+	xp = camStat.cos1 * camStat.cos2 * xp - camStat.cos1 * camStat.sin2 * yp;
+	yp = camStat.cos1 * camStat.sin2 * xp + camStat.cos1 * camStat.cos2 * yp - camStat.sin1 * yp + camStat.distToScr;
+	zp = camStat.sin1 * xp + camStat.sin1 * yp + camStat.cos1 * zp;
+
+	float s = camStat.distToScr / yp; //find the scaling required to land on the screen plane
+
+	if (s < 0.0f || s > 1.0f) stat.behindScreen = true; //if the point is behind the screen
+
+	//scale vector onto screen plane and invert y (previous z) axis, also shifting origo to top left
+	xp = s * xp + camStat.scrW / 2.0f;
+	yp = -s * zp + camStat.scrH / 2.0f; //pretty sure on the + here, check notebook
+
+	//scale to fit screen
+	xp *= camStat.pixW / camStat.scrW;
+	yp *= camStat.pixH / camStat.scrH;
+
+	int x = (int)floor(xp);
+	int y = (int)floor(yp);
+
+	if (x > camStat.pixW || x < 0 || y > camStat.pixH || y < 0) stat.insideScreen = false; //final criteria
+
+	stat.pos = Int2(x, y);
+
+	return stat;
+}
