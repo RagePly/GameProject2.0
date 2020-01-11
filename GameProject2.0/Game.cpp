@@ -151,6 +151,7 @@ void Game::render() {
 	
 	SDL_LockSurface(scrSurf);
 	unsigned char* lockedPixels = (unsigned char*)scrSurf->pixels;
+
 	painter->beginDrawing(lockedPixels);
 
 	rast->renderImage();
@@ -158,15 +159,7 @@ void Game::render() {
 	rast->drawLine(rast->tfPToScr(world->getAllGobj()[0].tf.pos).pos, rast->tfPToScr(world->getAllGobj()[5].tf.pos).pos);
 
 	painter->finishDrawing();
-	//std::cout << "image rendered" << std::endl;
 
-
-	/*
-	if (counter < screenHeight) {
-		cam->renderRow(world, lockedPixels, pitch, counter,*ligth);
-		counter++;
-	}
-	*/
 
 	SDL_UpdateTexture(screen, NULL, lockedPixels,scrSurf->pitch);
 
