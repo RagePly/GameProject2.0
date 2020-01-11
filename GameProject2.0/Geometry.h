@@ -61,8 +61,12 @@ public:
 	int x, y;
 
 	Int2();
+	Int2(const Int2& v);
 	Int2(int x, int y);
+	Int2(const Float2& v);
 	~Int2();
+
+	void add(const Int2& v);
 };
 
 

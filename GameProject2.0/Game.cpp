@@ -50,14 +50,14 @@ void Game::init(const char* title, int xpos, int ypos, int w, int h, bool fullsc
 		screenHeight = h;
 
 		world = new World();
-		Transform pos1({ 0,3,0 });
-		Transform pos2({ 1,3,0 });
-		Transform pos3({ 1,4,0 });
-		Transform pos4({ 0,4,0 });
-		Transform pos5({ 0,3,1 });
+		Transform pos1({ -1,3,-1 });
+		Transform pos2({ 1,3,-1 });
+		Transform pos3({ 1,4,-1 });
+		Transform pos4({ -1,4,-1 });
+		Transform pos5({ -1,3,1 });
 		Transform pos6({ 1,3,1 });
 		Transform pos7({ 1,4,1 });
-		Transform pos8({ 0,4,1 });
+		Transform pos8({ -1,4,1 });
 
 		world->add(Gobject(pos1));
 		world->add(Gobject(pos2));
@@ -154,6 +154,8 @@ void Game::render() {
 	painter->beginDrawing(lockedPixels);
 
 	rast->renderImage();
+
+	rast->drawLine(rast->tfPToScr(world->getAllGobj()[0].tf.pos).pos, rast->tfPToScr(world->getAllGobj()[5].tf.pos).pos);
 
 	painter->finishDrawing();
 	//std::cout << "image rendered" << std::endl;

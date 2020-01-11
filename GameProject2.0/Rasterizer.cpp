@@ -157,3 +157,93 @@ PointStat Rasterizer::tfPToScr(const Float3& point) const {
 
 	return stat;
 }
+
+
+
+void Rasterizer::drawLine(const Float2& a, const Float2& b) {
+	Int2 p0(a);
+	Int2 p1(b);
+
+	drawLine(p0, p1);
+}
+
+void Rasterizer::drawLine(const Int2& a, const Int2& b) {
+	Int2 p0(a);
+	Int2 p1(b);
+
+	if (p0.x > p1.x) { //correcting order
+		p1 = p0;
+		p0 = Int2(b);
+	}
+
+	int dx = p1.x - p0.x;
+	int dy = p1.y - p0.y;
+
+
+	//finding the sign of the gradient
+	bool positive = true;
+	if (dy < 0) positive = false;
+
+	//dominant direction
+	bool xdom = true;
+	if ((positive && dy > dx) || (!positive && -dy > dx)) xdom = false;
+
+	//Deciding the movement
+	Int2 add1, add2;
+	int sign;
+	if (positive) sign = 1;
+	else sign = -1;
+
+	if (xdom) {
+		add1.x = 1;
+		add2.x = 1;
+
+		add1.y = 0;
+		add2.y = sign;
+	}
+	else {
+		add1.x = 0;
+		add2.x = 1;
+
+		add1.y = sign;
+		add2.y = sign;
+	}
+
+	//Simple logic for the bounds of the for loop
+	int bound1, bound2;
+
+	if (xdom) {
+		bound1 = p0.x;
+		bound2 = p1.x;
+	}
+	else if(positive){
+		bound1 = p0.y;
+		bound2 = p1.y;
+	}
+	else {
+		bound1 = -p0.y;
+		bound2 = -p1.y;
+	}
+
+
+	int C = dx * p0.y - dy * p0.x;
+	
+	
+	//The little traveler
+	Int2 pos(p0);
+
+	for (int i = bound1; i < bound2 + 1; i++) {
+		int op1 = abs(dy * (pos.x + add1.x) - dx * (pos.y + add1.y) + C);
+		int op2 = abs(dy * (pos.x + add2.x) - dx * (pos.y + add2.y) + C);
+
+		if (op2 < op1) {
+			pos.add(add2);
+			painter->draw(pos.x, pos.y);
+		}
+		else {
+			pos.add(add1);
+			painter->draw(pos.x, pos.y);
+		}
+
+	}
+}

@@ -70,6 +70,8 @@ public:
 	void updateCamStats();
 	void renderImage();
 	PointStat tfPToScr(const Float3 &point) const; //Tranfsform point to screen
+	void drawLine(const Float2& a, const Float2& b);
+	void drawLine(const Int2& a, const Int2& b);
 private:
 	World* gWorld;
 	RastCam* rastCam;
