@@ -42,3 +42,11 @@ enum shape_id {
 	id_camerobj,
 	id_total
 };
+
+
+/*
+Player Settings
+*/
+
+#define WALKING_INCREMENT 0.1f;
+#define TURNING_INCREMENT 0.01f;

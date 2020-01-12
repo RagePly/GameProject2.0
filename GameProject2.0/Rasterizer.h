@@ -21,7 +21,7 @@ public:
 
 
 struct PointStat {
-	Int2 pos;
+	Int2 pos; //should instead be Float2
 	bool insideScreen = true;
 	bool behindScreen = false;
 };
@@ -50,7 +50,7 @@ public:
 	float getsH() const;
 
 	CamStat getCamStat() const;
-	bool isUpdated() const { return updated; };
+	bool isUpdated();
 	void updateRecieved() { updated = false; };
 
 private:
@@ -69,6 +69,7 @@ public:
 	void addPainter(Painter* painter);
 	void updateCamStats();
 	void renderImage();
+	void renderBackground();
 	PointStat tfPToScr(const Float3 &point) const; //Tranfsform point to screen
 	void drawLine(const Float2& a, const Float2& b);
 	void drawLine(const Int2& a, const Int2& b);

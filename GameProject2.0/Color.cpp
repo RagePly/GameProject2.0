@@ -40,9 +40,28 @@ void Painter::beginDrawing(unsigned char* lockedPixels) {
 	working = true;
 }
 
-void Painter::draw(int x, int y) {
-	lockedPixels[y * 4 * w + x * 4] = 255;
-	lockedPixels[y * 4 * w + x * 4 + 1] = 255;
-	lockedPixels[y * 4 * w + x * 4 + 2] = 255;
+void Painter::clearCanvas() {
+	if (working) {
+		for (int y = 0; y < h; y++) {
+			for (int x = 0; x < w; x++) {
+				fastDraw(x, y);
+			}
+		}
+	}
+	
 }
 
+void Painter::draw(int x, int y) {
+
+	if (!(x < 0 || y < 0 || x > w || y > h) && working) {
+		lockedPixels[y * 4 * w + x * 4] = 255;
+		lockedPixels[y * 4 * w + x * 4 + 1] = 255;
+		lockedPixels[y * 4 * w + x * 4 + 2] = 255;
+	}
+}
+
+void Painter::fastDraw(int x, int y) {
+	lockedPixels[y * 4 * w + x * 4] = 0;
+	lockedPixels[y * 4 * w + x * 4 + 1] = 0;
+	lockedPixels[y * 4 * w + x * 4 + 2] = 0;
+}

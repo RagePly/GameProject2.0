@@ -77,6 +77,11 @@ CamStat RastCam::getCamStat() const {
 	return newStats;
 }
 
+bool RastCam::isUpdated() { //THIS IS SO DUMB AT THE MOMENT
+	updated = camerObj->tf.pos.isUpdated() || camerObj->tf.rot.isUpdated();
+	return updated;
+}
+
 
 Rasterizer::Rasterizer():
 	gWorld(nullptr),
@@ -109,7 +114,7 @@ void Rasterizer::renderImage() {
 
 		PointStat pointStat = tfPToScr(obj.tf.pos);
 
-		if (pointStat.behindScreen || !pointStat.insideScreen) continue;
+		if (pointStat.behindScreen || !pointStat.insideScreen) continue; //find actual use for this
 		
 		//Draw if all conditions are met
 		painter->draw(pointStat.pos.x, pointStat.pos.y);
@@ -123,6 +128,14 @@ void Rasterizer::updateCamStats() {
 	}
 }
 
+#define V1X camStat.cos1 * camStat.cos2 * xp - camStat.cos1 * camStat.sin2 * yp
+#define V1Y camStat.cos1 * camStat.sin2 * xp + camStat.cos1 * camStat.cos2 * yp - camStat.sin1 * yp
+#define V1Z camStat.sin1 * xp + camStat.sin1 * yp + camStat.cos1 * zp
+
+#define V2X xp * camStat.cos2 - yp * camStat.sin2
+#define V2Y xp * camStat.cos1 * camStat.sin2 + yp * camStat.cos1 * camStat.cos2 - zp * camStat.sin1
+#define V2Z xp * camStat.sin1 * camStat.sin2 + yp * camStat.sin1 * camStat.cos2 + zp * camStat.cos1
+
 PointStat Rasterizer::tfPToScr(const Float3& point) const {
 
 	PointStat stat;
@@ -131,10 +144,55 @@ PointStat Rasterizer::tfPToScr(const Float3& point) const {
 	float yp = point.getY() - camStat.cy;
 	float zp = point.getZ() - camStat.cz;
 
+	fmat3x1 p;
+	p.mat[0] = xp;
+	p.mat[1] = yp;
+	p.mat[2] = zp;
+
 	//rotating around origo and move origo to the eye (which is distToScr neg y direction from camera)
-	xp = camStat.cos1 * camStat.cos2 * xp - camStat.cos1 * camStat.sin2 * yp;
-	yp = camStat.cos1 * camStat.sin2 * xp + camStat.cos1 * camStat.cos2 * yp - camStat.sin1 * yp + camStat.distToScr;
-	zp = camStat.sin1 * xp + camStat.sin1 * yp + camStat.cos1 * zp;
+
+	//rotate x
+	/*
+		|	1	0	0		|
+	Rx	|	0	cos	-sin	|
+		|	0	sin	cos		|
+	*/
+
+	fmat3x3 Rx;
+	Rx.mat[0][0] = 1.0f;
+	Rx.mat[1][1] = camStat.cos1;
+	Rx.mat[1][2] = - camStat.sin1;
+	Rx.mat[2][1] = camStat.sin1;
+	Rx.mat[2][2] = camStat.cos1;
+
+	/*
+		|	cos	-sin	0	|
+	Rz	|	sin	cos		0	|
+		|	0	0		1	|
+	*/
+
+	fmat3x3 Rz;
+	Rz.mat[0][0] = camStat.cos2;
+	Rz.mat[0][1] = -camStat.sin2;
+	Rz.mat[1][0] = camStat.sin2;
+	Rz.mat[1][1] = camStat.cos2;
+	Rz.mat[2][2] = 1.0f;
+
+	fmat3x3 Rzx;
+	fmat3x1 pP;
+	fmat3x3mult(Rz, Rx, Rzx);
+	fmat3x3mul3x1(Rzx, p, pP);
+
+	pP.mat[1] += camStat.distToScr;
+	/*
+	xp = V1X;
+	yp = V1Y + camStat.distToScr;
+	zp = V1Z;
+	*/
+
+	xp = pP.mat[0];
+	yp = pP.mat[1];
+	zp = pP.mat[2];
 
 	float s = camStat.distToScr / yp; //find the scaling required to land on the screen plane
 
@@ -158,7 +216,9 @@ PointStat Rasterizer::tfPToScr(const Float3& point) const {
 	return stat;
 }
 
-
+void Rasterizer::renderBackground() {
+	painter->clearCanvas();
+}
 
 void Rasterizer::drawLine(const Float2& a, const Float2& b) {
 	Int2 p0(a);

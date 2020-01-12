@@ -4,16 +4,6 @@
 void testing() {
 
 
-	Float2 a(0.2, 1.9);
-
-	Int2 b(a);
-
-	std::cout << b.x << " " << b.y << std::endl;
-
-
-
-
-
 }
 
 

@@ -35,9 +35,30 @@ enum cKeys {
 	CKEYS_DEFAULT,
 	CKEYS_SPACE,
 	CKEYS_ESC,
+	CKEYS_W,
+	CKEYS_A,
+	CKEYS_S,
+	CKEYS_D,
+	CKEYS_R,
+	CKEYS_F,
+	CKEYS_UP,
+	CKEYS_LEFT,
+	CKEYS_DOWN,
+	CKEYS_RIGHT,
 	CKEYS_TOTAL
 };
 
+class Player {
+public:
+	Player();
+	Player(Gobject* eyes);
+	~Player();
+
+	void update(cKey* keyboard);
+
+private:
+	Gobject* eyes;
+};
 
 class Game
 {
@@ -79,5 +100,6 @@ private:
 	World* world;
 	Rasterizer* rast;
 	Painter* painter;
+	Player* player;
 };
 

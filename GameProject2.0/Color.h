@@ -22,12 +22,16 @@ public:
 	~Painter();
 
 	void beginDrawing(unsigned char* pixels);
-	void draw(int x, int y); //this sofar does not check whether to draw or not. Should the painter be responisble or the program?
+	void clearCanvas();
+	void draw(int x, int y);
+	void fastDraw(int x, int y);
+
 	void finishDrawing() { lockedPixels = nullptr; };
 private:
 	int w, h;
 	bool working;
 	unsigned char* lockedPixels;
+	
 };
 
 const static RGB_COLOR SKY_COLOR(0, 0, 200);

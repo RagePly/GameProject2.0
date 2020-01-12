@@ -4,9 +4,11 @@ structure
 	settings.h	:iostream
 	color.h		:settings.h
 	geometry.h	:color.h
-	raycaster.h	:geometry.h
+	worldObject.h :geometry.h
+	raycaster.h	:worldObject.h
 	rasterizer.h :raycaster.h
-	game.h		:rasterizer.h, vector, SDL.h
+	player.h : rasterizer.h
+	game.h		:player.h, vector, SDL.h
 
 
 
@@ -45,3 +47,60 @@ Pixel Format
 
 
 Maths about shadows are on page 171
+
+
+
+
+MESHES
+
+Vertexes are points which all have a unique position
+
+
+
+current point to screen coordinate needs to be replaced by a:
+	tfWorldToScreen which returns a float3 on the screen
+	then also a screenftoint for converting the point already on the screen to a int
+	then the draw thingy
+
+Triangles store vertexes in a order, rotated so that the face is in the direction of the normal (cross product)
+
+Steps:
+	1: Add camera controls, remove duplicate code for checking if a point can be drawn
+	2: Switch the function that generates a int2 point on the screen surface to one that give a float2 point
+	3: define vertex and t
+
+
+
+
+	TODO: Fix so that the camera movement works, sofar the arrows are set to specific axis.
+
+
+
+
+
+
+
+	Rotational matrices, checked to actually work
+
+	
+		|	1	0	0		|
+	Rx	|	0	cos	-sin	|
+		|	0	sin	cos		|
+
+		|	cos		0	sin	|
+	Ry	|	0		1	0	|
+		|	-sin	0	cos	|
+
+		|	cos	-sin	0	|
+	Rz	|	sin	cos		0	|
+		|	0	0		1	|
+
+
+
+	RyRx	|	cosy		0		siny		|
+			|	sinx*siny	cosx	-sinx*cosy	|
+			|	-cosx*siny	sinx	cosx*cosy	|
+
+			x stands for the rotation round the x-axis, y stands for the rotation round' the y-axis
+
+	RzRyRx |

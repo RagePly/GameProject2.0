@@ -12,6 +12,7 @@ public:
 
 	Float3 pos;
 	Float2 rot;
+
 	void print() const;
 private:
 	//TODO: check the ability to have a private backup of the position
